@@ -7,6 +7,7 @@
 
 import Foundation
 
+///This protocol is using  for dependency injection 
 protocol NetworkProtocol{
     func fetchRequest<T:Codable>(url:URL, type:T.Type) async throws -> T
     static func decodeData<T:Codable>(data:Data) async throws-> T

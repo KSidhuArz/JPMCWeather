@@ -7,6 +7,7 @@
 
 import Foundation
 
+///This class using to build a url with the help of builder design pattren
 class URLBuilder{
     var component: URLComponents
     

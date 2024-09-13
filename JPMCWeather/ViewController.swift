@@ -15,20 +15,29 @@ class ViewController: UIViewController  {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        ///Intializing view model
         viewModel = WeatherSearchViewModel(networkProtocol: NetworkManager(), delegate: self)
+        
+        /*checking if user did last search then showing last search city/country/zipp code autofilled*/
+        if let lastSearch = UserDefaults.standard.value(forKey: "lastSearch") as? String {
+            searchBar.text = lastSearch
+            fetchWeatherDetail()
+        }
+        
         weatherBgView.isHidden = true
         coreLocationSetup()
         activityIndicatorSetup()
         searchBarCustomize()
     }
     
+    ///location manager for access user location
     func coreLocationSetup(){
         locationManager = CLLocationManager()
         locationManager?.delegate = self
         locationManager?.requestWhenInUseAuthorization()
     }
     
+    ///Set up for activity indicator
     func activityIndicatorSetup(){
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(activityIndicator)
@@ -47,6 +56,13 @@ class ViewController: UIViewController  {
               }
     }
     
+    func fetchWeatherDetail(){
+        activityIndicator.startAnimating()
+        Task {
+            await viewModel?.fetchWeatherData(search: replaceSpaceFromString(input: searchBar.text ?? ""))
+        }
+    }
+    
     /// Remove space from string for final url
     /// - Parameter input: we pass city name
     /// - Returns: final string space replace with %20
@@ -57,11 +73,13 @@ class ViewController: UIViewController  {
 }
 
 extension ViewController:WeatherSearchViewModelProtocol{
+    /// handling error case
+    /// - Parameter message: getting error message
     func failureResponse(message: String) {
         DispatchQueue.main.async {
             self.activityIndicator.stopAnimating()
             self.weatherBgView.isHidden = true
-            let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
+            let alert = UIAlertController(title: "", message: "City not found", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .cancel))
             self.present(alert, animated: true)
         }
@@ -105,11 +123,9 @@ extension ViewController: CLLocationManagerDelegate{
 extension ViewController: UISearchBarDelegate{
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if locationEnable == true {
-            activityIndicator.startAnimating()
             if searchBar.text != ""{
-                Task {
-                    await viewModel?.fetchWeatherData(search: replaceSpaceFromString(input: searchBar.text ?? ""))
-                }
+                UserDefaults.standard.setValue(searchBar.text, forKey: "lastSearch")
+                fetchWeatherDetail()
             }
         } else {
             self.weatherBgView.isHidden = true

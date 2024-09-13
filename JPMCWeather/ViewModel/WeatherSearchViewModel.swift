@@ -22,7 +22,9 @@ class WeatherSearchViewModel{
         self.weatherDetail = weatherDetail
     }
 
-    
+    //MARK: webservice
+    /// in this method calling  weather service
+    /// - Parameter search: we are passing city or zipcode
     func fetchWeatherData(search:String) async{
         do{
             weatherDetail = try await self.networkProtocol.fetchRequest(url: URLBuilder().setQuery(search: search).build()!, type: Result.self)
