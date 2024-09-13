@@ -1,0 +1,6 @@
+framework module Pods_JPMCWeather_JPMCWeatherUITests {
+  umbrella header "Pods-JPMCWeather-JPMCWeatherUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
