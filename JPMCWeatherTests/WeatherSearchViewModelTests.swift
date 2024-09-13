@@ -41,7 +41,7 @@ final class WeatherSearchViewModelTests: XCTestCase {
             let _:Result = try await viewModel.networkProtocol.fetchRequest(url: URLBuilder().setQuery(search: "dallas").build()!, type: Result.self)
             XCTFail("Fetch data should be fail")
         }catch let error{
-            XCTAssertEqual(error.localizedDescription, "The operation couldn’t be completed. (WeatherJPMC.NetworkError error 1.)")
+            XCTAssertEqual(error.localizedDescription, "The operation couldn’t be completed. (JPMCWeather.NetworkError error 1.)")
         }
         expectation.fulfill()
     }
